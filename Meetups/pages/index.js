@@ -1,24 +1,24 @@
+import { useState, useEffect } from 'react';
 import MeetupList from '../components/meetups/MeetupList';
 
-const DUMMY_MEETUPS = [
-  {
-    id: 'm1',
-    title: 'A First Meetup',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg',
-    address: 'Some address 5, 12345 Some City',
-    description: 'This is a first meetup!'
-  },
-  {
-    id: 'm2',
-    title: 'A Second Meetup',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg',
-    address: 'Some address 10, 12345 Some City',
-    description: 'This is a second meetup!'
-  }
-];
-
 function HomePage() {
-  return <MeetupList meetups={DUMMY_MEETUPS} />;
+  const [meetups, setMeetups] = useState([]);
+
+  const fetchMeetups = async () => {
+    try {
+      const response = await fetch('/api/meetups');
+      const data = await response.json();
+      setMeetups(data.meetups);
+    } catch (error) {
+      console.error('Failed to fetch meetups:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeetups();
+  }, []);
+
+  return <MeetupList meetups={meetups} />;
 }
 
 export default HomePage;
