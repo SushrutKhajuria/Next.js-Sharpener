@@ -1,24 +1,28 @@
-import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import MeetupList from '../components/meetups/MeetupList';
 
-function HomePage() {
-  const [meetups, setMeetups] = useState([]);
+function HomePage(props) {
+  return (
+    <>
+      <Head>
+        <title>React Meetups</title>
+        <meta name="description" content="Browse a huge list of highly active React meetups!" />
+      </Head>
+      <MeetupList meetups={props.meetups} />
+    </>
+  );
+}
 
-  const fetchMeetups = async () => {
-    try {
-      const response = await fetch('/api/meetups');
-      const data = await response.json();
-      setMeetups(data.meetups);
-    } catch (error) {
-      console.error('Failed to fetch meetups:', error);
-    }
+export async function getStaticProps() {
+  const response = await fetch('http://localhost:3000/api/meetups');
+  const data = await response.json();
+
+  return {
+    props: {
+      meetups: data.meetups,
+    },
+    revalidate: 1, // Incremental static regeneration
   };
-
-  useEffect(() => {
-    fetchMeetups();
-  }, []);
-
-  return <MeetupList meetups={meetups} />;
 }
 
 export default HomePage;
